@@ -1,0 +1,19 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python -m src.data.prepare_data --raw_csv data/raw/credit_default.csv 
+      --out data/processed/credit_default.csv
+    deps:
+    - path: data/raw/credit_default.csv
+      hash: md5
+      md5: 940b416bb13a9b24bb5c9e1589284005
+      size: 2862995
+    - path: src/data/prepare_data.py
+      hash: md5
+      md5: 676ba018e6e1242530ee90eca2bdba7a
+      size: 5349
+    outs:
+    - path: data/processed/credit_default.csv
+      hash: md5
+      md5: 3cfe15b0ab79230e99eb42956b4521bd
+      size: 7331622
