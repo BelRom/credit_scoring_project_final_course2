@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/romanbelanin/vs projects/credit_scoring_project/mlruns/366758208125479842/470ed622a0c44c879942601df9387728/artifacts
+end_time: 1766340582151
+entry_point_name: ''
+experiment_id: '366758208125479842'
+lifecycle_stage: active
+run_id: 470ed622a0c44c879942601df9387728
+run_name: exp5_logreg_rs99
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1766340515591
+status: 3
+tags: []
+user_id: romanbelanin

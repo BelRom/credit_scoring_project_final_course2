@@ -1,0 +1,15 @@
+creation_timestamp: 1766340494552
+current_stage: None
+deployment_job_state: null
+description: null
+last_updated_timestamp: 1766340494552
+model_id: m-f36fa414a514496b8476c42bef828126
+name: CreditDefaultModel
+run_id: 32cc833c988a43bb98dc65177723fe8f
+run_link: null
+source: models:/m-f36fa414a514496b8476c42bef828126
+status: READY
+status_message: null
+storage_location: file:///Users/romanbelanin/vs projects/credit_scoring_project/mlruns/366758208125479842/models/m-f36fa414a514496b8476c42bef828126/artifacts
+user_id: null
+version: 4

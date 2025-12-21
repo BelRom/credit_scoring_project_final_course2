@@ -1,0 +1,22 @@
+artifact_path: file:///Users/romanbelanin/vs projects/credit_scoring_project/mlruns/366758208125479842/models/m-af426e12904b4170a10317acf57f41ea/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.6
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+mlflow_version: 3.8.0
+model_id: m-af426e12904b4170a10317acf57f41ea
+model_size_bytes: 488815
+model_uuid: m-af426e12904b4170a10317acf57f41ea
+prompts: null
+run_id: 272f8fe07a714e38b05bab5faf9f88d6
+utc_time_created: '2025-12-21 18:08:32.343739'

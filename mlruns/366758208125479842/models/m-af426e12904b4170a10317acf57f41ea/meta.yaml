@@ -1,0 +1,10 @@
+artifact_location: file:///Users/romanbelanin/vs projects/credit_scoring_project/mlruns/366758208125479842/models/m-af426e12904b4170a10317acf57f41ea/artifacts
+creation_timestamp: 1766340512333
+experiment_id: '366758208125479842'
+last_updated_timestamp: 1766340513874
+model_id: m-af426e12904b4170a10317acf57f41ea
+model_type: null
+name: model
+source_run_id: 272f8fe07a714e38b05bab5faf9f88d6
+status: 2
+status_message: null

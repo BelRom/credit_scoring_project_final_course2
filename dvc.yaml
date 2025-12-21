@@ -1,0 +1,21 @@
+stages:
+  prepare:
+    cmd: python -m src.data.prepare_data --raw_csv data/raw/credit_default.csv --out data/processed/credit_default.csv
+    deps:
+      - src/data/prepare_data.py
+      - data/raw/credit_default.csv
+    outs:
+      - data/processed/credit_default.csv
+
+  train:
+    cmd: python -m src.models.train --data data/processed/credit_default.csv --target target --model logreg
+    deps:
+      - src/models/train.py
+      - src/models/pipeline.py
+      - data/processed/credit_default.csv
+    outs:
+      - models/best_model.joblib
+      - models/roc_curve.png
+    metrics:
+      - metrics.json:
+          cache: false
