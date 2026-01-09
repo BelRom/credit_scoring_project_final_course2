@@ -94,9 +94,7 @@ def main():
     parser.add_argument("--tracking-uri", default="file:./mlruns")
     parser.add_argument("--experiment", default="Credit_Default_Prediction")
     parser.add_argument("--run-name", default=None)
-    parser.add_argument(
-        "--register-name", default="CreditDefaultModel"
-    )
+    parser.add_argument("--register-name", default="CreditDefaultModel")
     args = parser.parse_args()
 
     df = pd.read_csv(args.data)

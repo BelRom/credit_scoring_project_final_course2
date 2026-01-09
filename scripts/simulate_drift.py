@@ -48,7 +48,6 @@ def psi_numeric(
         if edges.size < 3:
             strategy = "uniform"
         else:
-            
             edges[0] = min(edges[0], np.min(actual))
             edges[-1] = max(edges[-1], np.max(actual))
 
@@ -136,21 +135,49 @@ def split_train_test(
     cut = int(len(df) * (1.0 - test_size))
     train_idx = idx[:cut]
     test_idx = idx[cut:]
-    return df.iloc[train_idx].reset_index(drop=True), df.iloc[test_idx].reset_index(drop=True)
+    return df.iloc[train_idx].reset_index(drop=True), df.iloc[test_idx].reset_index(
+        drop=True
+    )
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(description="Simulate new data batches, call API, compute PSI drift.")
-    p.add_argument("--data", required=True, help="Path to processed CSV (contains features + target column).")
+    p = argparse.ArgumentParser(
+        description="Simulate new data batches, call API, compute PSI drift."
+    )
+    p.add_argument(
+        "--data",
+        required=True,
+        help="Path to processed CSV (contains features + target column).",
+    )
     p.add_argument("--target", default="target", help="Target column name in CSV.")
-    p.add_argument("--api-url", default="http://localhost:8000", help="API base url, e.g. http://localhost:8000")
-    p.add_argument("--batch-size", type=int, default=200, help="Rows per simulated batch.")
-    p.add_argument("--batches", type=int, default=5, help="Number of batches to simulate.")
-    p.add_argument("--sleep", type=float, default=1.0, help="Seconds to sleep between batches.")
+    p.add_argument(
+        "--api-url",
+        default="http://localhost:8000",
+        help="API base url, e.g. http://localhost:8000",
+    )
+    p.add_argument(
+        "--batch-size", type=int, default=200, help="Rows per simulated batch."
+    )
+    p.add_argument(
+        "--batches", type=int, default=5, help="Number of batches to simulate."
+    )
+    p.add_argument(
+        "--sleep", type=float, default=1.0, help="Seconds to sleep between batches."
+    )
     p.add_argument("--bins", type=int, default=10, help="Bins for numeric PSI.")
-    p.add_argument("--bin-strategy", choices=["quantile", "uniform"], default="quantile")
-    p.add_argument("--features", default="", help="Comma-separated key features to monitor. If empty: auto-select.")
-    p.add_argument("--out", default="reports/drift_report.csv", help="Where to save drift report CSV.")
+    p.add_argument(
+        "--bin-strategy", choices=["quantile", "uniform"], default="quantile"
+    )
+    p.add_argument(
+        "--features",
+        default="",
+        help="Comma-separated key features to monitor. If empty: auto-select.",
+    )
+    p.add_argument(
+        "--out",
+        default="reports/drift_report.csv",
+        help="Where to save drift report CSV.",
+    )
     args = p.parse_args()
 
     df = load_data(args.data, args.target)
@@ -181,7 +208,7 @@ def main() -> None:
     cursor = 0
     for b in range(1, args.batches + 1):
         if cursor >= n_total:
-            cursor = 0 
+            cursor = 0
         batch = test_df.iloc[cursor : cursor + args.batch_size].copy()
         cursor += args.batch_size
 
