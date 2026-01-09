@@ -35,7 +35,7 @@ RAW_FEATURE_COLUMNS = [
 def prepare_features_for_inference(raw_row: dict) -> pd.DataFrame:
     df = pd.DataFrame([raw_row])
 
-    # ✅ pandera валидация + coercion типов
+    # pandera валидация
     df = raw_predict_schema().validate(df)
 
     df = primary_cleaning(df)
@@ -82,7 +82,7 @@ def make_features(df: pd.DataFrame) -> pd.DataFrame:
         include_lowest=True,
     )
 
-    # one-hot: age_bin_*
+    # one-hot
     age_dummies = pd.get_dummies(df["age_bin"], prefix="age_bin")
     df = pd.concat([df.drop(columns=["age_bin"]), age_dummies], axis=1)
 

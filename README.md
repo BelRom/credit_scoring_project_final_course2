@@ -34,17 +34,17 @@
 ## Структура проекта
 
 ```
-credit_scoring_project/│
+credit_scoring_project/
 ├── data/
 │   ├── raw/                 # Исходные данные
 │   └── processed/           # Подготовленные данные
-││
+│
 ├── gx/                      # Great Expectations (datasources, suites, checkpoints)
 │
 ├── mlruns/                  # MLflow experiments и артефакты
 │
 ├── models/                  # Сохранённые модели и метрики
-││
+│
 ├── references/              # Полезные материалы и ссылки
 │
 ├── reports/                 # Отчёты, графики, результаты экспериментов

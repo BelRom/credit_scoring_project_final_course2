@@ -96,7 +96,7 @@ def main():
     parser.add_argument("--run-name", default=None)
     parser.add_argument(
         "--register-name", default="CreditDefaultModel"
-    )  # можно "", если не нужен registry
+    )
     args = parser.parse_args()
 
     df = pd.read_csv(args.data)
@@ -109,7 +109,7 @@ def main():
     X = df.drop(columns=[args.target])
     y = df[args.target].astype(int)
 
-    # 1) split
+    # split
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
@@ -118,10 +118,10 @@ def main():
         stratify=y,
     )
 
-    # 2) pipeline
+    # pipeline
     pipe = create_pipeline(args.model, X_train, random_state=args.random_state)
 
-    # 3) search
+    # search
     param_dist = get_search_space(args.model)
     search = RandomizedSearchCV(
         estimator=pipe,
@@ -171,7 +171,7 @@ def main():
 
         best_model = search.best_estimator_
 
-        # тестовые метрики + ROC artifact (через compute_metrics)
+        # тестовые метрики + ROC artifact
         test_metrics = evaluate_on_test(
             best_model, X_test, y_test, args.out_roc, threshold=0.5
         )
@@ -193,7 +193,7 @@ def main():
         else:
             mlflow.sklearn.log_model(best_model, artifact_path="model")
 
-        # параллельно сохраним joblib (удобно для локального predict.py)
+        # параллельно сохраним joblib
         Path(args.out_model).parent.mkdir(parents=True, exist_ok=True)
         joblib.dump(best_model, args.out_model)
         mlflow.log_artifact(args.out_model)

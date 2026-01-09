@@ -111,7 +111,7 @@ def feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
         out["age_bin"],
         prefix="age_bin",
         dummy_na=False,
-        dtype=np.int8,
+        dtype=np.int8, 
     )
 
     EXPECTED_AGE_DUMMIES = [
@@ -152,7 +152,7 @@ def prepare_dataset(raw_csv: Path) -> pd.DataFrame:
     df = load_raw_csv(raw_csv)
     df = primary_cleaning(df)
     df = feature_engineering(df)
-    df = finalize_dtypes(df)  # ✅ добавили финализацию типов
+    df = finalize_dtypes(df)
     return df
 
 

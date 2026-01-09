@@ -129,10 +129,6 @@ dmypy.json
 .pyre/
 
 # Специфичные для проекта
-data/raw/*.csv
-data/processed/
-models/trained/*.pkl
-models/artifacts/
 logs/
 *.log
 
@@ -158,9 +154,5 @@ mlruns/
 
 # DVC cache
 .dvc/cache/
-
-# Models & artifacts
-models/*.joblib
-models/*.png
 
 gx/uncommitted/

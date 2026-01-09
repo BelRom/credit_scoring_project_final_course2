@@ -16,7 +16,7 @@ warnings.filterwarnings(
 
 def validate_raw(df: pd.DataFrame) -> pd.DataFrame:
     schema = raw_input_schema()
-    return schema.validate(df, lazy=True)  # lazy=True collects all errors
+    return schema.validate(df, lazy=True)
 
 
 def validate_raw_csv(path: Path) -> pd.DataFrame:
