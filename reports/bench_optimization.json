@@ -1,0 +1,42 @@
+{
+  "batch_size": 1024,
+  "cpu": {
+    "torch_fp32": {
+      "ms_per_batch": 0.35282912009279244,
+      "ms_per_sample": 0.0003445596875906176,
+      "samples_per_s": 2902254.7791142995
+    },
+    "torch_quant_dynamic": {
+      "ms_per_batch": 0.34510362005676143,
+      "ms_per_sample": 0.0003370152539616811,
+      "samples_per_s": 2967224.742040017
+    },
+    "onnx_fp32": {
+      "ms_per_batch": 0.4311260749818757,
+      "ms_per_sample": 0.000421021557599488,
+      "samples_per_s": 2375175.2896018834
+    },
+    "onnx_int8": {
+      "ms_per_batch": 0.1552910999453161,
+      "ms_per_sample": 0.00015165146479034775,
+      "samples_per_s": 6594067.530982711
+    }
+  },
+  "gpu": {
+    "torch_fp32": {
+      "ms_per_batch": 0.07013429989456199,
+      "ms_per_sample": 6.84905272407832e-05,
+      "samples_per_s": 14600559.234774625
+    },
+    "onnx_fp32": {
+      "ms_per_batch": 0.08298308501252905,
+      "ms_per_sample": 8.10381689575479e-05,
+      "samples_per_s": 12339864.200582484
+    },
+    "onnx_int8": {
+      "ms_per_batch": 0.5647562300146092,
+      "ms_per_sample": 0.0005515197558736418,
+      "samples_per_s": 1813171.675810484
+    }
+  }
+}
