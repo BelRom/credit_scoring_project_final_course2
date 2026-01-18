@@ -83,14 +83,9 @@ resource "yandex_kubernetes_cluster" "this" {
 # CPU node group
 ############################################
 
-data "yandex_kubernetes_cluster" "existing" {
-  name      = "${var.name}-k8s"
-  folder_id = var.folder_id
-}
-
 resource "yandex_kubernetes_node_group" "cpu" {
   name       = "${var.name}-cpu-ng"
-  cluster_id = data.yandex_kubernetes_cluster.existing.id
+  cluster_id = yandex_kubernetes_cluster.this.id
   version    = var.k8s_version
 
   instance_template {
