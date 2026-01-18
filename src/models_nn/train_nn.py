@@ -3,7 +3,10 @@ from __future__ import annotations
 import warnings
 
 from src.models.metrics import compute_metrics
+from src.models.pipeline import build_preprocessor
 from src.models_nn.nn import TabularMLP
+from src.models_nn.nn_bundle import NNPipeline
+from src.models_nn.nn_runtime import DROPOUT, HIDDEN_SIZES
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -21,7 +24,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 
-def build_preprocessor(df: pd.DataFrame, target: str) -> ColumnTransformer:
+def build_preprocessor_old(df: pd.DataFrame, target: str) -> ColumnTransformer:
     X = df.drop(columns=[target])
     num_cols = X.select_dtypes(include=[np.number]).columns.tolist()
     cat_cols = [c for c in X.columns if c not in num_cols]
@@ -70,16 +73,22 @@ def main() -> None:
     args = ap.parse_args()
 
     df = pd.read_csv(args.data)
+
+    if "ID" in df.columns:
+        df = df.drop(columns=["ID"])
+
     X = df.drop(columns=[args.target])
     y = df[args.target].astype(int).values
 
-    X = X.drop(columns=["ID"])
-
+    # split
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=args.test_size, random_state=args.seed, stratify=y
+        X,
+        y,
+        test_size=args.test_size,
+        random_state=57,
+        stratify=y,
     )
-
-    pre = build_preprocessor(pd.concat([X_train, pd.Series(y_train, name=args.target)], axis=1), args.target)
+    pre = build_preprocessor(X_train)
     pre.fit(X_train)
 
     Xtr = to_float32(pre.transform(X_train))
@@ -152,16 +161,27 @@ def main() -> None:
     import os
     os.makedirs(args.out_dir, exist_ok=True)
 
-    joblib.dump(pre, f"{args.out_dir}/nn_preprocessor.joblib")
-    torch.save(
-        {
-            "state_dict": model.state_dict(),
-            "in_features": Xtr.shape[1],
-        },
-        f"{args.out_dir}/nn_model.pt",
+    bundle = NNPipeline(
+        preprocessor=pre,
+        state_dict={k: v.detach().cpu() for k, v in model.state_dict().items()},
+        in_features=Xtr.shape[1],
+        device="cpu",  # лучше сохранять cpu, в API сам решишь
     )
-    print(f"\nSaved: {args.out_dir}/nn_preprocessor.joblib")
+
+    joblib.dump(bundle, f"{args.out_dir}/nn_preprocessor.joblib")
+
+    torch.save(
+    {
+        "state_dict": model.state_dict(),
+        "in_features": Xtr.shape[1],
+        "hidden_sizes": HIDDEN_SIZES,  # если атрибут есть
+        "dropout": DROPOUT,
+    },
+    "models/nn_model.pt",
+)
+
     print(f"Saved: {args.out_dir}/nn_model.pt")
+    print(f"\nSaved: {args.out_dir}/nn_preprocessor.joblib")
 
 
 if __name__ == "__main__":

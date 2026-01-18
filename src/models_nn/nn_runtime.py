@@ -21,6 +21,9 @@ PREPROCESSOR_PATH = Path("models/nn_preprocessor.joblib")
 TORCH_CKPT_PATH = Path("models/nn_model.pt")
 ONNX_PATH = Path("models/nn_model.onnx")
 
+HIDDEN_SIZES = (256, 128, 64)
+DROPOUT = 0.2
+
 
 # -------------------------
 # Model
@@ -29,8 +32,8 @@ class TabularMLP(nn.Module):
     def __init__(
         self,
         in_features: int,
-        hidden_sizes: tuple[int, ...] = (256, 128, 64),
-        dropout: float = 0.2,
+        hidden_sizes: tuple[int, ...] = HIDDEN_SIZES,
+        dropout: float = DROPOUT,
     ) -> None:
         super().__init__()
 
@@ -81,14 +84,19 @@ def load_dataset() -> pd.DataFrame:
 
 
 def load_preprocessor():
+    if not PREPROCESSOR_PATH.exists():
+        raise FileNotFoundError(
+            f"Preprocessor not found: {PREPROCESSOR_PATH}. "
+            f"Run: python -m src.models_nn.train_nn ..."
+        )
     return joblib.load(PREPROCESSOR_PATH)
 
 
-def make_features_array(df: pd.DataFrame, n_rows: int | None = None) -> np.ndarray:
+def make_features_array(df, n_rows: int):
+    X = df.head(n_rows)
+
     pre = load_preprocessor()
-    X = df.drop(columns=[TARGET_COL])
-    if n_rows is not None:
-        X = X.iloc[:n_rows]
+
     return pre.transform(X).astype(np.float32, copy=False)
 
 
@@ -100,8 +108,8 @@ def load_nn_checkpoint() -> NNCheckpoint:
 
     return NNCheckpoint(
         in_features=int(ckpt["in_features"]),
-        hidden_sizes=tuple(int(x) for x in ckpt.get("hidden_sizes", (256, 128, 64))),
-        dropout=float(ckpt.get("dropout", 0.2)),
+        hidden_sizes=tuple(int(x) for x in ckpt.get("hidden_sizes", HIDDEN_SIZES)),
+        dropout=float(ckpt.get("dropout", DROPOUT)),
         state_dict=ckpt["state_dict"],
     )
 

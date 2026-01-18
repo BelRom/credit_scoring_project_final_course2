@@ -3,8 +3,8 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.api.model import load_model, load_onnx_model, predict_one
 from src.api.schemas import PredictRequest, PredictResponse
-from src.api.model import predict_one, load_model
 
 import warnings
 
@@ -24,8 +24,8 @@ app.add_middleware(
 
 @app.on_event("startup")
 def _startup():
+    #load_onnx_model()
     load_model()
-
 
 @app.get("/")
 def root():

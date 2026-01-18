@@ -280,7 +280,7 @@ python -m src.models_nn.benchmark_nn_cpu
 
 
 ### экспорт ONNX
-python -m src.models_nn.export_onnx
+python -m src.models_nn.export_nn_to_onnx
 
 #### quantization
 python -m src.models_nn.optimization.quantize_torch_dynamic
@@ -353,7 +353,51 @@ INT8-модель в формате ONNX обеспечила **ускорени
 * Использование GPU целесообразно только для моделей в формате FP32; применение INT8 на GPU в данной задаче неэффективно.
 
 **Рекомендуемая конфигурация для продакшена:**
-➡️ **CPU-инференс с использованием ONNX Runtime и INT8-квантизации**.
+ **CPU-инференс с использованием ONNX Runtime и INT8-квантизации**.
+
+
+ ## Этап 2. Cloud Infrastructure as Code
+
+ Команды: удалить Kubernetes-ресурсы (внутри кластера)
+Удалить демо-приложение
+kubectl delete namespace demo
+
+Удалить Ingress NGINX (и namespace)
+helm uninstall ingress-nginx -n ingress-nginx
+kubectl delete namespace ingress-nginx
+
+Проверка, что всё чисто
+kubectl get ns
+kubectl get all -A | head
+
+
+Сначала узнай имя/ID:
+yc managed-kubernetes node-group list
+
+Удалить node group по имени:
+yc managed-kubernetes node-group delete --name mlops-staging-cpu-ng
+
+Проверка:
+yc managed-kubernetes node-group list
+kubectl get nodes   # после удаления нод будет пусто/недоступно
+
+
+Полное удаление всего, что описано в конфиге
+cd infrastructure/environments/staging
+terraform destroy
+
+
+Если node group удаляли — создать заново через Terraform
+В каталоге окружения:
+
+cd infrastructure/environments/staging
+terraform init -backend-config=backend.hcl -reconfigure
+terraform apply
+
+Перезапустить деплоймент
+kubectl rollout restart deployment/hello -n demo
+kubectl rollout status deployment/hello -n demo
+
 
 
 

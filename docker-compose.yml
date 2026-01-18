@@ -3,7 +3,7 @@ services:
     build: .
     container_name: credit_api
     environment:
-      - MODEL_PATH=models/best_model.joblib
+      - MODEL_PATH=models/nn_model_int8.onnx
     ports:
       - "8000:8000"
 

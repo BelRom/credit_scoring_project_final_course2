@@ -24,7 +24,7 @@ def time_fn(fn, x: np.ndarray, warmup: int, n_runs: int) -> float:
 
 def main() -> None:
     df = load_dataset()
-    X_arr = make_features_array(df)
+    X_arr = make_features_array(df, n_rows=len(df))
 
     bs = min(BATCH_SIZE, X_arr.shape[0])
     x = X_arr[:bs]

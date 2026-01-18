@@ -1,16 +1,19 @@
 from __future__ import annotations
 
 from pathlib import Path
-
 import torch
 
-from src.models_nn.nn_runtime import ONNX_PATH, TabularMLP, load_nn_checkpoint
-
-
+from src.models_nn.nn_runtime import (
+    ONNX_PATH,
+    TabularMLP,
+    load_nn_checkpoint,
+)
 
 def main() -> None:
+    # Загружаем чекпоинт
     ckpt = load_nn_checkpoint()
 
+    # Восстанавливаем модель точно такой же архитектуры
     model = TabularMLP(
         in_features=ckpt.in_features,
         hidden_sizes=ckpt.hidden_sizes,
@@ -19,9 +22,13 @@ def main() -> None:
     model.load_state_dict(ckpt.state_dict)
     model.eval()
 
-    # dummy input
-    dummy = torch.zeros((4, ckpt.in_features), dtype=torch.float32)
+    # Dummy input (batch=4, features=in_features)
+    dummy = torch.zeros(
+        (4, ckpt.in_features),
+        dtype=torch.float32,
+    )
 
+    # Экспорт в ONNX
     ONNX_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     torch.onnx.export(
@@ -39,8 +46,7 @@ def main() -> None:
         },
     )
 
-    print(f"✅ Exported ONNX to: {Path(ONNX_PATH).as_posix()}")
-
+    print(f"✅ Exported ONNX to: {ONNX_PATH.as_posix()}")
 
 if __name__ == "__main__":
     main()

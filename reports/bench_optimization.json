@@ -2,41 +2,41 @@
   "batch_size": 1024,
   "cpu": {
     "torch_fp32": {
-      "ms_per_batch": 0.35282912009279244,
-      "ms_per_sample": 0.0003445596875906176,
-      "samples_per_s": 2902254.7791142995
+      "ms_per_batch": 0.38823234994197264,
+      "ms_per_sample": 0.00037913315424020766,
+      "samples_per_s": 2637595.7597378287
     },
     "torch_quant_dynamic": {
-      "ms_per_batch": 0.34510362005676143,
-      "ms_per_sample": 0.0003370152539616811,
-      "samples_per_s": 2967224.742040017
+      "ms_per_batch": 0.36861489003058523,
+      "ms_per_sample": 0.0003599754785454934,
+      "samples_per_s": 2777966.999420548
     },
     "onnx_fp32": {
-      "ms_per_batch": 0.4311260749818757,
-      "ms_per_sample": 0.000421021557599488,
-      "samples_per_s": 2375175.2896018834
+      "ms_per_batch": 0.47342147503513843,
+      "ms_per_sample": 0.00046232565921400237,
+      "samples_per_s": 2162977.5031307912
     },
     "onnx_int8": {
-      "ms_per_batch": 0.1552910999453161,
-      "ms_per_sample": 0.00015165146479034775,
-      "samples_per_s": 6594067.530982711
+      "ms_per_batch": 0.2331849600886926,
+      "ms_per_sample": 0.00022771968758661387,
+      "samples_per_s": 4391363.832429495
     }
   },
   "gpu": {
     "torch_fp32": {
-      "ms_per_batch": 0.07013429989456199,
-      "ms_per_sample": 6.84905272407832e-05,
-      "samples_per_s": 14600559.234774625
+      "ms_per_batch": 0.07077976479195058,
+      "ms_per_sample": 6.912086405463924e-05,
+      "samples_per_s": 14467411.738509396
     },
     "onnx_fp32": {
-      "ms_per_batch": 0.08298308501252905,
-      "ms_per_sample": 8.10381689575479e-05,
-      "samples_per_s": 12339864.200582484
+      "ms_per_batch": 0.07655410998268053,
+      "ms_per_sample": 7.475987302996145e-05,
+      "samples_per_s": 13376159.689292554
     },
     "onnx_int8": {
-      "ms_per_batch": 0.5647562300146092,
-      "ms_per_sample": 0.0005515197558736418,
-      "samples_per_s": 1813171.675810484
+      "ms_per_batch": 0.5091113600065,
+      "ms_per_sample": 0.0004971790625063477,
+      "samples_per_s": 2011347.7726895078
     }
   }
 }
