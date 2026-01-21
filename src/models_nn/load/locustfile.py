@@ -10,6 +10,7 @@ BASE = {
     "AGE": 24,
 }
 
+
 class PredictUser(HttpUser):
     wait_time = between(0.05, 0.2)
 

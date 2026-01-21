@@ -52,9 +52,7 @@ def load_test() -> tuple[np.ndarray, np.ndarray]:
     X = df.drop(columns=[TARGET])
     y = df[TARGET].astype(int).to_numpy()
 
-    _, Xte, _, yte = train_test_split(
-        X, y, test_size=0.2, random_state=42, stratify=y
-    )
+    _, Xte, _, yte = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
     pre = joblib.load(PRE)
     Xte_arr = pre.transform(Xte).astype(np.float32, copy=False)
@@ -103,7 +101,9 @@ def torch_quant_dynamic_proba(pt_path: Path, X: np.ndarray) -> np.ndarray:
 
 
 def onnx_proba(onnx_path: Path, X: np.ndarray) -> np.ndarray:
-    sess = ort.InferenceSession(onnx_path.as_posix(), providers=["CPUExecutionProvider"])
+    sess = ort.InferenceSession(
+        onnx_path.as_posix(), providers=["CPUExecutionProvider"]
+    )
     name = sess.get_inputs()[0].name
     logits = sess.run(None, {name: X})[0].reshape(-1)
     return sigmoid(logits)

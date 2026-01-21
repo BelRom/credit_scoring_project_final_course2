@@ -34,7 +34,7 @@ class PredictRequest(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
-                "LIMIT_BAL": 20000,
+                "LIMIT_BAL": 15000,
                 "SEX": 2,
                 "EDUCATION": 2,
                 "MARRIAGE": 1,
@@ -48,15 +48,15 @@ class PredictRequest(BaseModel):
                 "BILL_AMT1": 3913,
                 "BILL_AMT2": 3102,
                 "BILL_AMT3": 689,
-                "BILL_AMT4": 0,
-                "BILL_AMT5": 0,
-                "BILL_AMT6": 0,
-                "PAY_AMT1": 0,
+                "BILL_AMT4": 300,
+                "BILL_AMT5": 300,
+                "BILL_AMT6": 300,
+                "PAY_AMT1": 100,
                 "PAY_AMT2": 689,
-                "PAY_AMT3": 0,
-                "PAY_AMT4": 0,
-                "PAY_AMT5": 0,
-                "PAY_AMT6": 0,
+                "PAY_AMT3": 100,
+                "PAY_AMT4": 100,
+                "PAY_AMT5": 100,
+                "PAY_AMT6": 100,
             }
         }
 

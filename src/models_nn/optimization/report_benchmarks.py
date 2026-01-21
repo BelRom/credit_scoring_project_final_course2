@@ -7,8 +7,10 @@ M = Path("reports/metrics_optimization.json")
 B = Path("reports/bench_optimization.json")
 OUT = Path("reports/REPORT_OPTIMIZATION.md")
 
+
 def row(name: str, d: dict) -> str:
     return f"| {name} | {d['ms_per_batch']:.3f} | {d['ms_per_sample']:.6f} | {d['samples_per_s']:.1f} |"
+
 
 def main() -> None:
     metrics = json.loads(M.read_text(encoding="utf-8"))
@@ -25,7 +27,9 @@ def main() -> None:
     lines.append("| Variant | ROC-AUC | Precision | Recall | F1 |")
     lines.append("|---|---:|---:|---:|---:|")
     for k, v in metrics.items():
-        lines.append(f"| {k} | {v['roc_auc']:.4f} | {v['precision']:.4f} | {v['recall']:.4f} | {v['f1']:.4f} |")
+        lines.append(
+            f"| {k} | {v['roc_auc']:.4f} | {v['precision']:.4f} | {v['recall']:.4f} | {v['f1']:.4f} |"
+        )
 
     lines.append("\n## 3. Inference Benchmark (CPU)\n")
     lines.append(f"Batch size: {bench['batch_size']}\n")
@@ -61,6 +65,7 @@ def main() -> None:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"Saved: {OUT}")
+
 
 if __name__ == "__main__":
     main()

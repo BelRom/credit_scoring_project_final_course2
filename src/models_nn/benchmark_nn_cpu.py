@@ -3,7 +3,12 @@ from __future__ import annotations
 import time
 import numpy as np
 
-from src.models_nn.nn_runtime import load_dataset, make_features_array, torch_predict_proba, onnx_predict_proba
+from src.models_nn.nn_runtime import (
+    load_dataset,
+    make_features_array,
+    torch_predict_proba,
+    onnx_predict_proba,
+)
 
 
 # HARD-CODED benchmark params
@@ -43,8 +48,12 @@ def main() -> None:
 
     print("\n=== CPU Inference Benchmark (Torch vs ONNXRuntime) ===")
     print(f"Batch size: {bs}")
-    print(f"Torch  : {torch_ms_batch:.3f} ms/batch | {torch_ms_sample:.6f} ms/sample | {torch_rps:.1f} samples/s")
-    print(f"ONNXRT : {onnx_ms_batch:.3f} ms/batch | {onnx_ms_sample:.6f} ms/sample | {onnx_rps:.1f} samples/s")
+    print(
+        f"Torch  : {torch_ms_batch:.3f} ms/batch | {torch_ms_sample:.6f} ms/sample | {torch_rps:.1f} samples/s"
+    )
+    print(
+        f"ONNXRT : {onnx_ms_batch:.3f} ms/batch | {onnx_ms_sample:.6f} ms/sample | {onnx_rps:.1f} samples/s"
+    )
     print(f"Speedup (Torch/ONNXRT): {torch_s / onnx_s:.2f}x")
 
 

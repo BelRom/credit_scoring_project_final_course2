@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import numpy as np
 import torch
@@ -17,6 +17,7 @@ class NNPipeline:
     def _build_model(self):
         # Import inside to avoid joblib issues with circular imports
         from src.models_nn.nn_runtime import TabularMLP
+
         model = TabularMLP(in_features=self.in_features).to(self.device)
         model.load_state_dict(self.state_dict)
         model.eval()

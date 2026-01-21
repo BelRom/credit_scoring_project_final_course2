@@ -28,7 +28,9 @@ def main() -> None:
         {
             "state_dict": qmodel.state_dict(),
             "in_features": int(ckpt["in_features"]),
-            "hidden_sizes": tuple(int(x) for x in ckpt.get("hidden_sizes", (256, 128, 64))),
+            "hidden_sizes": tuple(
+                int(x) for x in ckpt.get("hidden_sizes", (256, 128, 64))
+            ),
             "dropout": float(ckpt.get("dropout", 0.2)),
             "quantization": "dynamic_int8_linear",
         },

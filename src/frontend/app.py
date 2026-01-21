@@ -75,7 +75,7 @@ st.caption(
 
 # Пример из схемы
 EXAMPLE = {
-    "LIMIT_BAL": 20000,
+    "LIMIT_BAL": 150,
     "SEX": 2,
     "EDUCATION": 2,
     "MARRIAGE": 1,
@@ -89,15 +89,15 @@ EXAMPLE = {
     "BILL_AMT1": 3913,
     "BILL_AMT2": 3102,
     "BILL_AMT3": 689,
-    "BILL_AMT4": 0,
-    "BILL_AMT5": 0,
-    "BILL_AMT6": 0,
-    "PAY_AMT1": 0,
+    "BILL_AMT4": 300,
+    "BILL_AMT5": 300,
+    "BILL_AMT6": 300,
+    "PAY_AMT1": 100,
     "PAY_AMT2": 689,
-    "PAY_AMT3": 0,
-    "PAY_AMT4": 0,
-    "PAY_AMT5": 0,
-    "PAY_AMT6": 0,
+    "PAY_AMT3": 100,
+    "PAY_AMT4": 100,
+    "PAY_AMT5": 100,
+    "PAY_AMT6": 100,
 }
 
 ALL_FEATURES = list(EXAMPLE.keys())
@@ -177,7 +177,7 @@ def set_example():
 
 
 def reset_form():
-    st.session_state["LIMIT_BAL"] = 20000.0
+    st.session_state["LIMIT_BAL"] = 1000.0
     st.session_state["SEX"] = 2
     st.session_state["EDUCATION"] = 2
     st.session_state["MARRIAGE"] = 1

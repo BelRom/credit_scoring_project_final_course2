@@ -12,7 +12,9 @@ def sigmoid(x: np.ndarray) -> np.ndarray:
 
 class ONNXModel:
     def __init__(self, model_path: str | None = None) -> None:
-        self.model_path = model_path or os.getenv("MODEL_PATH", "models/nn_model_int8.onnx")
+        self.model_path = model_path or os.getenv(
+            "MODEL_PATH", "models/nn_model_int8.onnx"
+        )
 
         self.session = ort.InferenceSession(
             self.model_path,
@@ -22,9 +24,15 @@ class ONNXModel:
         self.input_name = self.session.get_inputs()[0].name
         self.output_name = self.session.get_outputs()[0].name
         # в ONNXModel.__init__
-        print("input:", self.session.get_inputs()[0].name, self.session.get_inputs()[0].shape, self.session.get_inputs()[0].type)
-        print("outputs:", [(o.name, o.shape, o.type) for o in self.session.get_outputs()])
-
+        print(
+            "input:",
+            self.session.get_inputs()[0].name,
+            self.session.get_inputs()[0].shape,
+            self.session.get_inputs()[0].type,
+        )
+        print(
+            "outputs:", [(o.name, o.shape, o.type) for o in self.session.get_outputs()]
+        )
 
     def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
         if not isinstance(X, pd.DataFrame):
@@ -37,7 +45,9 @@ class ONNXModel:
 
         # Expected logits shape: (N,)
         if y.ndim != 1:
-            raise ValueError(f"Unexpected ONNX output shape: {y.shape}, expected 1D array")
+            raise ValueError(
+                f"Unexpected ONNX output shape: {y.shape}, expected 1D array"
+            )
 
         p1 = sigmoid(y)
         p0 = 1.0 - p1

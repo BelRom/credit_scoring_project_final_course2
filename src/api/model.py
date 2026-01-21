@@ -7,10 +7,11 @@ import pandas as pd
 from src.data.prepare_data import primary_cleaning, feature_engineering, finalize_dtypes
 from src.models_nn.model_onnx import ONNXModel
 
-#MODEL_PATH = os.getenv("MODEL_PATH", "models/nn_model.onnx")
+# MODEL_PATH = os.getenv("MODEL_PATH", "models/nn_model.onnx")
 
 MODEL_PATH = os.getenv("MODEL_PATH", "models/nn_model_int8.onnx")
 _model = None
+
 
 def load_model():
     global _model
@@ -28,7 +29,7 @@ def load_onnx_model() -> ONNXModel:
 
 def predict_one(raw_features: dict):
     model = load_onnx_model()
-    #model = load_model()
+    # model = load_model()
     features = raw_features.get("features", raw_features)
     df = pd.DataFrame([features])
     df = primary_cleaning(df)

@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import numpy as np
 
-from src.models_nn.nn_runtime import load_dataset, make_features_array, torch_predict_proba, onnx_predict_proba
+from src.models_nn.nn_runtime import (
+    load_dataset,
+    make_features_array,
+    torch_predict_proba,
+    onnx_predict_proba,
+)
 
 
 # HARD-CODED validation params

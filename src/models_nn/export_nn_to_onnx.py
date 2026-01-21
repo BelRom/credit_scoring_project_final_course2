@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 import torch
 
 from src.models_nn.nn_runtime import (
@@ -8,6 +7,7 @@ from src.models_nn.nn_runtime import (
     TabularMLP,
     load_nn_checkpoint,
 )
+
 
 def main() -> None:
     # Load checkpoint with trained weights
@@ -47,6 +47,7 @@ def main() -> None:
     )
 
     print(f"✅ Exported ONNX to: {ONNX_PATH.as_posix()}")
+
 
 if __name__ == "__main__":
     main()

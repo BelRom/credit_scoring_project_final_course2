@@ -1,22 +1,22 @@
 from __future__ import annotations
 
 import warnings
-
-from src.models.metrics import compute_metrics
-from src.models.pipeline import build_preprocessor
-from src.models_nn.nn_runtime import TabularMLP, DROPOUT, HIDDEN_SIZES
-from src.models_nn.nn_bundle import NNPipeline
-warnings.filterwarnings("ignore", category=FutureWarning)
-warnings.filterwarnings("ignore", category=UserWarning)
-
 import argparse
 
 import joblib
 import numpy as np
 import pandas as pd
 import torch
+
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
+from src.models.metrics import compute_metrics
+from src.models.pipeline import build_preprocessor
+from src.models_nn.nn_runtime import TabularMLP, DROPOUT, HIDDEN_SIZES
+from src.models_nn.nn_bundle import NNPipeline
+
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
 
 def to_float32(x: np.ndarray) -> np.ndarray:
@@ -65,7 +65,9 @@ def main() -> None:
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     model = TabularMLP(in_features=Xtr.shape[1]).to(device)
-    opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    opt = torch.optim.AdamW(
+        model.parameters(), lr=args.lr, weight_decay=args.weight_decay
+    )
     criterion = torch.nn.BCEWithLogitsLoss()
 
     best_auc = -1.0
@@ -80,7 +82,7 @@ def main() -> None:
         idx = rng.permutation(n)
 
         for start in range(0, n, args.batch_size):
-            batch = idx[start : start + args.batch_size]
+            batch = idx[start: start + args.batch_size]
             xb = torch.from_numpy(Xtr[batch]).to(device)
             yb = torch.from_numpy(y_train[batch].astype(np.float32)).to(device)
 
@@ -101,7 +103,9 @@ def main() -> None:
 
         if auc > best_auc + 1e-4:
             best_auc = auc
-            best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
+            best_state = {
+                k: v.detach().cpu().clone() for k, v in model.state_dict().items()
+            }
             bad_epochs = 0
         else:
             bad_epochs += 1
@@ -127,6 +131,7 @@ def main() -> None:
 
     # сохранение
     import os
+
     os.makedirs(args.out_dir, exist_ok=True)
 
     bundle = NNPipeline(
@@ -139,14 +144,14 @@ def main() -> None:
     joblib.dump(bundle, f"{args.out_dir}/nn_preprocessor.joblib")
 
     torch.save(
-    {
-        "state_dict": model.state_dict(),
-        "in_features": Xtr.shape[1],
-        "hidden_sizes": HIDDEN_SIZES,  # если атрибут есть
-        "dropout": DROPOUT,
-    },
-    "models/nn_model.pt",
-)
+        {
+            "state_dict": model.state_dict(),
+            "in_features": Xtr.shape[1],
+            "hidden_sizes": HIDDEN_SIZES,  # если атрибут есть
+            "dropout": DROPOUT,
+        },
+        "models/nn_model.pt",
+    )
 
     print(f"Saved: {args.out_dir}/nn_model.pt")
     print(f"\nSaved: {args.out_dir}/nn_preprocessor.joblib")
