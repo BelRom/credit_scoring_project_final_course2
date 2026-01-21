@@ -82,7 +82,7 @@ def main() -> None:
         idx = rng.permutation(n)
 
         for start in range(0, n, args.batch_size):
-            batch = idx[start: start + args.batch_size]
+            batch = idx[start : start + args.batch_size]
             xb = torch.from_numpy(Xtr[batch]).to(device)
             yb = torch.from_numpy(y_train[batch].astype(np.float32)).to(device)
 
