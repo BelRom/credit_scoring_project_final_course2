@@ -4,9 +4,8 @@ import warnings
 
 from src.models.metrics import compute_metrics
 from src.models.pipeline import build_preprocessor
-from src.models_nn.nn import TabularMLP
+from src.models_nn.nn_runtime import TabularMLP, DROPOUT, HIDDEN_SIZES
 from src.models_nn.nn_bundle import NNPipeline
-from src.models_nn.nn_runtime import DROPOUT, HIDDEN_SIZES
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -16,39 +15,8 @@ import joblib
 import numpy as np
 import pandas as pd
 import torch
-from sklearn.compose import ColumnTransformer
-from sklearn.impute import SimpleImputer
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
-
-
-def build_preprocessor_old(df: pd.DataFrame, target: str) -> ColumnTransformer:
-    X = df.drop(columns=[target])
-    num_cols = X.select_dtypes(include=[np.number]).columns.tolist()
-    cat_cols = [c for c in X.columns if c not in num_cols]
-
-    num_pipe = Pipeline(
-        steps=[
-            ("imputer", SimpleImputer(strategy="median")),
-            ("scaler", StandardScaler()),
-        ]
-    )
-    cat_pipe = Pipeline(
-        steps=[
-            ("imputer", SimpleImputer(strategy="most_frequent")),
-            ("ohe", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
-        ]
-    )
-
-    return ColumnTransformer(
-        transformers=[
-            ("num", num_pipe, num_cols),
-            ("cat", cat_pipe, cat_cols),
-        ],
-        remainder="drop",
-    )
 
 
 def to_float32(x: np.ndarray) -> np.ndarray:

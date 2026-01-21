@@ -9,7 +9,7 @@ from src.models_nn.model_onnx import ONNXModel
 
 #MODEL_PATH = os.getenv("MODEL_PATH", "models/nn_model.onnx")
 
-MODEL_PATH = os.getenv("MODEL_PATH", "models/nn_preprocessor.joblib")
+MODEL_PATH = os.getenv("MODEL_PATH", "models/nn_model_int8.onnx")
 _model = None
 
 def load_model():
@@ -27,24 +27,13 @@ def load_onnx_model() -> ONNXModel:
 
 
 def predict_one(raw_features: dict):
-    #model = load_onnx_model()
-    model = load_model()
+    model = load_onnx_model()
+    #model = load_model()
     features = raw_features.get("features", raw_features)
     df = pd.DataFrame([features])
     df = primary_cleaning(df)
     df = feature_engineering(df)
     df = finalize_dtypes(df)
-
-    #proba_mat = model.predict_proba(df)
-    #print("proba_mat:", proba_mat, proba_mat.shape, proba_mat.dtype)
-
-    #p1 = proba_mat[:, 1][0]
-    #print("p1 raw:", p1, type(p1))
-
-    #proba = float(p1)
-    #pred = int(proba >= 0.5)
-    #print("proba float:", proba, type(proba))
-    #print("pred int:", pred, type(pred))
 
     print("df shape:", df.shape)
     print("df sum abs:", float(df.abs().sum(axis=1).iloc[0]))

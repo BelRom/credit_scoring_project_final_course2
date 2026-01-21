@@ -52,7 +52,7 @@ class TabularMLP(nn.Module):
         self.net = nn.Sequential(*layers)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.net(x)  # (N, 1)
+        return self.net(x).squeeze(1)  # (N,)
 
 
 # -------------------------

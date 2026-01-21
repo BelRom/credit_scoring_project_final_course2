@@ -24,8 +24,8 @@ app.add_middleware(
 
 @app.on_event("startup")
 def _startup():
-    #load_onnx_model()
-    load_model()
+    load_onnx_model()
+    #load_model()
 
 @app.get("/")
 def root():

@@ -15,8 +15,8 @@ class NNPipeline:
     device: str = "cpu"
 
     def _build_model(self):
-        # импорт внутри, чтобы joblib не ломался из-за циклических импортов
-        from src.models_nn.nn_runtime import TabularMLP  # поправь путь на свой
+        # Import inside to avoid joblib issues with circular imports
+        from src.models_nn.nn_runtime import TabularMLP
         model = TabularMLP(in_features=self.in_features).to(self.device)
         model.load_state_dict(self.state_dict)
         model.eval()

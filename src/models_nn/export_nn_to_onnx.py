@@ -10,10 +10,10 @@ from src.models_nn.nn_runtime import (
 )
 
 def main() -> None:
-    # Загружаем чекпоинт
+    # Load checkpoint with trained weights
     ckpt = load_nn_checkpoint()
 
-    # Восстанавливаем модель точно такой же архитектуры
+    # Reconstruct model with exact same architecture
     model = TabularMLP(
         in_features=ckpt.in_features,
         hidden_sizes=ckpt.hidden_sizes,

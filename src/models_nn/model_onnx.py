@@ -12,7 +12,7 @@ def sigmoid(x: np.ndarray) -> np.ndarray:
 
 class ONNXModel:
     def __init__(self, model_path: str | None = None) -> None:
-        self.model_path = model_path or os.getenv("MODEL_PATH", "models/model.onnx")
+        self.model_path = model_path or os.getenv("MODEL_PATH", "models/nn_model_int8.onnx")
 
         self.session = ort.InferenceSession(
             self.model_path,
@@ -35,11 +35,9 @@ class ONNXModel:
         y = self.session.run([self.output_name], {self.input_name: x})[0]
         y = np.asarray(y)
 
-        # ожидаем logits: (N,) или (N,1)
-        if y.ndim == 2 and y.shape[1] == 1:
-            y = y[:, 0]
-        elif y.ndim != 1:
-            raise ValueError(f"Unexpected ONNX output shape: {y.shape}")
+        # Expected logits shape: (N,)
+        if y.ndim != 1:
+            raise ValueError(f"Unexpected ONNX output shape: {y.shape}, expected 1D array")
 
         p1 = sigmoid(y)
         p0 = 1.0 - p1

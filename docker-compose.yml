@@ -2,6 +2,9 @@ services:
   api:
     build: .
     container_name: credit_api
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     environment:
       - MODEL_PATH=models/nn_model_int8.onnx
     ports:
@@ -10,6 +13,9 @@ services:
   frontend:
     build: .
     container_name: credit_frontend
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     environment:
       - API_URL=http://api:8000
     depends_on:
