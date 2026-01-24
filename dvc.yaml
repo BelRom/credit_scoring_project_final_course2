@@ -16,6 +16,3 @@ stages:
     outs:
       - models/best_model.joblib
       - models/roc_curve.png
-    metrics:
-      - metrics.json:
-          cache: false
