@@ -1,4 +1,5 @@
 [core]
-    remote = localstore
-['remote "localstore"']
-    url = ../../dvcstore
+    remote = myremote
+['remote "myremote"']
+    url = s3://mlops-artifacts-bucket-roman
+    endpointurl = https://storage.yandexcloud.net

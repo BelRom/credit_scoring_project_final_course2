@@ -156,3 +156,6 @@ mlruns/
 .dvc/cache/
 
 gx/uncommitted/
+models/best_model.joblib
+
+infrastructure/k8s/secret.yaml

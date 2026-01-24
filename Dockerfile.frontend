@@ -1,0 +1,36 @@
+# syntax=docker/dockerfile:1
+
+# Dockerfile для фронтенда на Streamlit.
+
+# Установка Python-зависимостей
+FROM python:3.12-slim AS base
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends build-essential && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Финальное рабочее окружение
+FROM python:3.12-slim AS final
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+WORKDIR /app
+
+# Копируем установленные библиотеки из предыдущего этапа, чтобы не переустанавливать их
+COPY --from=base /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
+
+# Копируем только исходный код фронтенда в образ.
+COPY src/frontend ./src/frontend
+
+# Открываем порт, который использует Streamlit
+EXPOSE 8501
+
+# Запускаем приложение Streamlit. Примечание: переменная API_URL задаётся через docker-compose.
+CMD ["streamlit", "run", "src/frontend/app.py", "--server.port", "8501", "--server.address", "0.0.0.0",  "--server.headless", "true"]

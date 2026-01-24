@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: credit-api
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1          # Допускаем один дополнительный Pod во время обновления
+      maxUnavailable: 0    # Не допускаем недоступных Pod’ов
+  selector:
+    matchLabels:
+      app: credit-api
+  template:
+    metadata:
+      labels:
+        app: credit-api
+    spec:
+      containers:
+      - name: credit-api
+        image: <ваш реестр>/credit_api:<tag>
+        ports:
+        - containerPort: 8000
+        # Переменные окружения из ConfigMap и Secret (см. пункт 2)
+        env:
+        - name: MODEL_PATH
+          valueFrom:
+            configMapKeyRef:
+              name: credit-api-config
+              key: MODEL_PATH
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: credit-api-secrets
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: credit-api-secrets
+              key: AWS_SECRET_ACCESS_KEY
+        # Пробы готовности и живости
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 20

@@ -1,8 +1,8 @@
 schema: '2.0'
 stages:
   prepare:
-    cmd: python -m src.data.prepare_data --raw_csv data/raw/credit_default.csv 
-      --out data/processed/credit_default.csv
+    cmd: python -m src.data.prepare_data --raw_csv data/raw/credit_default.csv --out
+      data/processed/credit_default.csv
     deps:
     - path: data/raw/credit_default.csv
       hash: md5
@@ -10,10 +10,35 @@ stages:
       size: 2862995
     - path: src/data/prepare_data.py
       hash: md5
-      md5: 676ba018e6e1242530ee90eca2bdba7a
-      size: 5349
+      md5: 0ee9a8f4d356982ee46a0ebaff8d007e
+      size: 4576
     outs:
     - path: data/processed/credit_default.csv
       hash: md5
-      md5: 3cfe15b0ab79230e99eb42956b4521bd
-      size: 7331622
+      md5: b1fba7715dddc16fd2331ee2f40ec9bd
+      size: 7157274
+  train:
+    cmd: python -m src.models.train --data data/processed/credit_default.csv --target
+      target --model logreg
+    deps:
+    - path: data/processed/credit_default.csv
+      hash: md5
+      md5: b1fba7715dddc16fd2331ee2f40ec9bd
+      size: 7157274
+    - path: src/models/pipeline.py
+      hash: md5
+      md5: 4f380dc09a97c2439789c29f27278405
+      size: 4347
+    - path: src/models/train.py
+      hash: md5
+      md5: 99070416a394289ab7d5b233c9260082
+      size: 6511
+    outs:
+    - path: models/best_model.joblib
+      hash: md5
+      md5: 275a557d702defffbd0bbe15cf128865
+      size: 6090
+    - path: models/roc_curve.png
+      hash: md5
+      md5: 4ea0faf662cfdabefd8e96b430948467
+      size: 46070

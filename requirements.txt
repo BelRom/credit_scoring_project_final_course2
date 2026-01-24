@@ -80,3 +80,4 @@ onnx>=1.15
 onnxruntime>=1.17
 onnxruntime-gpu>=1.17
 locust>=2.20
+pathspec==0.11.1
