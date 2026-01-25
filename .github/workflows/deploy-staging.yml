@@ -1,0 +1,63 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+env:
+  # Use the same tag as build; for staging we deploy commit SHA images
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Set up kubectl CLI
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      # Configure kubeconfig for staging cluster
+      - name: Set KUBECONFIG
+        run: |
+          echo "${{ secrets.KUBECONFIG_STAGING }}" > kubeconfig
+          export KUBECONFIG=$PWD/kubeconfig
+
+      # Create or update the secret in the cluster using values from GitHub secrets
+      - name: Create/Update AWS secret
+        run: |
+          kubectl delete secret credit-api-secrets --ignore-not-found
+          kubectl create secret generic credit-api-secrets \
+            --from-literal=AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            --from-literal=AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Apply ConfigMap, Deployment, Service and Ingress
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f infrastructure/k8s/configmap.yaml
+          kubectl apply -f infrastructure/k8s/service.yaml
+          kubectl apply -f infrastructure/k8s/ingress.yaml
+          kubectl apply -f infrastructure/k8s/deployment.yaml
+
+      # Update the deployment to the new image tag for the API and rollout
+      - name: Update API image and rollout
+        run: |
+          kubectl set image deployment/credit-api credit-api=${{ secrets.DOCKERHUB_USERNAME }}/credit_api:${{ github.sha }} --record
+          kubectl rollout status deployment/credit-api
+
+      # Run a basic smoke test against the health endpoint
+      - name: Smoke test API
+        run: |
+          # Attempt to read the ingress IP/hostname and check /health
+          # Wait briefly for ingress to update
+          sleep 20
+          INGRESS_HOST=$(kubectl get ingress credit-api-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}' || echo "")
+          if [ -z "$INGRESS_HOST" ]; then
+            INGRESS_HOST=$(kubectl get ingress credit-api-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          fi
+          echo "Testing http://$INGRESS_HOST/api/health"
+          curl -f --max-time 20 http://$INGRESS_HOST/api/health

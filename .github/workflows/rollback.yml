@@ -1,0 +1,26 @@
+name: Rollback Deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure KUBECONFIG
+        run: |
+          echo "${{ secrets.KUBECONFIG_STAGING }}" > kubeconfig
+          export KUBECONFIG=$PWD/kubeconfig
+
+      # Roll back the API deployment to the previous revision
+      - name: Rollback deployment
+        run: |
+          kubectl rollout undo deployment/credit-api
+          kubectl rollout status deployment/credit-api

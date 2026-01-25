@@ -1,0 +1,43 @@
+name: Canary Release
+
+on:
+  workflow_dispatch:
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure KUBECONFIG
+        run: |
+          echo "${{ secrets.KUBECONFIG_STAGING }}" > kubeconfig
+          export KUBECONFIG=$PWD/kubeconfig
+
+      # Deploy a canary version of the API image. In real scenarios,
+      # traffic splitting is managed by a service mesh or advanced ingress
+      - name: Set canary image
+        run: |
+          # Update the Deployment with the new image tag while keeping some
+          # old pods running (via rolling update). Weight-based traffic
+          # splitting would require additional configuration (e.g. Istio).
+          kubectl set image deployment/credit-api credit-api=${{ secrets.DOCKERHUB_USERNAME }}/credit_api:${{ github.sha }} --record
+          kubectl rollout status deployment/credit-api
+
+      # Perform a quick smoke test
+      - name: Smoke test canary deployment
+        run: |
+          sleep 20
+          INGRESS_HOST=$(kubectl get ingress credit-api-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}' || echo "")
+          if [ -z "$INGRESS_HOST" ]; then
+            INGRESS_HOST=$(kubectl get ingress credit-api-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          fi
+          curl -f --max-time 20 http://$INGRESS_HOST/api/health

@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: credit-api
-        image: <ваш реестр>/credit_api:<tag>
+        image: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/credit_api:latest
         ports:
         - containerPort: 8000
         # Переменные окружения из ConfigMap и Secret (см. пункт 2)

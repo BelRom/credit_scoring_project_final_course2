@@ -19,7 +19,8 @@ RUN pip install --upgrade pip && \
 FROM base AS dvc_stage
 WORKDIR /app
 
-COPY . .
+COPY src ./src
+COPY models ./models
 
 RUN pip install --no-cache-dir dvc[s3] || true
 
@@ -39,6 +40,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 COPY --from=base /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
+COPY --from=base /usr/local/bin/ /usr/local/bin/
 COPY --from=dvc_stage /app/src ./src
 COPY --from=dvc_stage /app/models ./models
 

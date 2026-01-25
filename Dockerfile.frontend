@@ -25,6 +25,7 @@ WORKDIR /app
 
 # Копируем установленные библиотеки из предыдущего этапа, чтобы не переустанавливать их
 COPY --from=base /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
+COPY --from=base /usr/local/bin/ /usr/local/bin/
 
 # Копируем только исходный код фронтенда в образ.
 COPY src/frontend ./src/frontend
