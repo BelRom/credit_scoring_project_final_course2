@@ -1,9 +1,10 @@
 name: Deploy Production
 
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["Deploy Staging"]
+    types:
+      - completed
 
 env:
   IMAGE_TAG: ${{ github.sha }}
