@@ -1,0 +1,52 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: credit-scoring-alerts
+  labels:
+    release: kps
+spec:
+  groups:
+    - name: credit-scoring.slo
+      rules:
+        - alert: CreditScoringApiTargetMissing
+          expr: up{job=~".*credit-scoring-api.*"} == 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Credit Scoring API target is missing"
+            description: "Prometheus не может скрапить метрики приложения 2+ минуты."
+
+        - alert: CreditScoringApiHigh5xxRate
+          expr: |
+            (
+              sum(rate(http_requests_total{job=~".*credit-scoring-api.*",status=~"5.."}[5m]))
+              /
+              sum(rate(http_requests_total{job=~".*credit-scoring-api.*"}[5m]))
+            ) > 0.05
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High 5xx rate (>5%)"
+            description: "Доля 5xx за 5 минут > 5%."
+
+    - name: kubernetes.basics
+      rules:
+        - alert: PodCrashLooping
+          expr: max_over_time(kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff"}[5m]) > 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Pod is CrashLooping"
+            description: "Есть контейнер(ы) в CrashLoopBackOff 5+ минут."
+
+        - alert: PodRestartsTooHigh
+          expr: increase(kube_pod_container_status_restarts_total[15m]) > 3
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Pod restarts too high"
+            description: "Рестарты контейнера > 3 за 15 минут."

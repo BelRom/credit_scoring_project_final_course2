@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-credit-scoring-api
+  labels:
+    grafana_dashboard: "1"
+data:
+  credit-scoring-api.json: |
+    {
+      "uid": "credit-scoring-api",
+      "title": "Credit Scoring / API",
+      "tags": ["credit-scoring", "fastapi"],
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "version": 1,
+      "refresh": "10s",
+      "panels": [
+        {
+          "type": "stat",
+          "title": "UP",
+          "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+          "targets": [
+            { "expr": "up{job=~\".*credit-scoring-api.*\"}", "refId": "A" }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "Requests / sec",
+          "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+          "targets": [
+            { "expr": "sum(rate(http_requests_total{job=~\".*credit-scoring-api.*\"}[1m]))", "refId": "A" }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "5xx / sec",
+          "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+          "targets": [
+            { "expr": "sum(rate(http_requests_total{job=~\".*credit-scoring-api.*\",status=~\"5..\"}[1m]))", "refId": "A" }
+          ]
+        }
+      ]
+    }

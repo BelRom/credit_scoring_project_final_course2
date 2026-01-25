@@ -1,0 +1,13 @@
+# Loki + promtail в одном чарте.
+# Grafana отключаем, т.к. Grafana уже ставится kube-prometheus-stack.
+
+grafana:
+  enabled: false
+
+loki:
+  enabled: true
+  isDefault: false
+  auth_enabled: false
+
+promtail:
+  enabled: true

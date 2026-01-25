@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: credit-scoring-api
+  labels:
+    release: kps
+spec:
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: credit-scoring-api
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
