@@ -15,12 +15,11 @@ env:
 
 jobs:
   # -------------------------------------------------------------------------
-  # Устанавливает зависимости Python, запускает проверки форматирования и линтинга,
-  # выполняет модульные тесты, делает базовую проверку безопасности и собирает
-  # Docker-образы для API и frontend. Публикует образы в Docker Hub с тегами SHA коммита.
+  # TEST: зависимости Python + форматирование + линтинг + тесты + GE + security checks
   # -------------------------------------------------------------------------
-  build-and-test:
+  test-lint-validate:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -62,14 +61,25 @@ jobs:
         run: |
           pip install pip-audit && pip-audit || true
 
-      # Авторизация в Docker Hub
+  # -------------------------------------------------------------------------
+  # BUILD: Docker build/push + trivy
+  # По умолчанию выключен (если собираешь локально).
+  # -------------------------------------------------------------------------
+  docker-build-push:
+    needs: [test-lint-validate]
+    runs-on: ubuntu-latest
+    # отключил потому что в github actions не хватило памяти для сборки
+    if: false
+
+    steps:
+      - uses: actions/checkout@v4
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Сборка и публикация API-образа
       - name: Build and push API image
         env:
           DOCKER_BUILDKIT: 1
@@ -86,7 +96,6 @@ jobs:
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/credit_api:${{ github.sha }}
           rm -f aws_key aws_secret
 
-      # Сборка и публикация frontend-образа
       - name: Build and push frontend image
         run: |
           docker build \
@@ -96,14 +105,12 @@ jobs:
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/credit_frontend:latest
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/credit_frontend:${{ github.sha }}
 
-      # Сканирование API-образа на уязвимости
       - name: Trivy scan API image
         run: |
           docker run --rm aquasec/trivy:latest --ignore-unfixed --no-progress \
             --severity CRITICAL,HIGH,MEDIUM \
             ${{ secrets.DOCKERHUB_USERNAME }}/credit_api:${{ github.sha }} || true
 
-      # Сканирование frontend-образа на уязвимости
       - name: Trivy scan Frontend image
         run: |
           docker run --rm aquasec/trivy:latest --ignore-unfixed --no-progress \

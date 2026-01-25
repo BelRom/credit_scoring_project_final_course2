@@ -6,6 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.api.model import load_onnx_model, predict_one
 from src.api.schemas import PredictRequest, PredictResponse
 
+from fastapi import FastAPI, Response
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -47,3 +50,7 @@ def health():
 def predict(req: PredictRequest):
     pred, proba = predict_one(req.model_dump())
     return PredictResponse(prediction=pred, probability=proba)
+
+@app.get("/metrics")
+def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
