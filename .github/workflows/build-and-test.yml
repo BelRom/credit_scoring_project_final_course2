@@ -47,7 +47,9 @@ jobs:
 
       # Validate data with Great Expectations checkpoint
       - name: Great Expectations validation
-        run: great_expectations checkpoint run credit_default_checkpoint
+        run: |
+          export GX_BASE_DIR="${{ github.workspace }}"
+          great_expectations checkpoint run credit_default_checkpoint
 
       # Static security analysis of Python code
       - name: Bandit security scanning
