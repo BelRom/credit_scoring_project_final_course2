@@ -35,7 +35,7 @@ variable "cpu_min" {
 }
 variable "cpu_max" {
   type    = number
-  default = 3
+  default = 2
 }
 
 # GPU node group

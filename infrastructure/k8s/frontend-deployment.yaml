@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: credit-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: credit-frontend
+  template:
+    metadata:
+      labels:
+        app: credit-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: belrom/credit_frontend:latest
+          ports:
+            - containerPort: 8501

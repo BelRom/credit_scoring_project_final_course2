@@ -1,8 +1,6 @@
 services:
-  # Backend API service.  Builds from the dedicated Dockerfile.api which uses
-  # multi‑stage builds and integrates DVC to fetch the versioned model.  It
-  # exposes port 8000 for FastAPI.
   api:
+    image: belrom/credit_api:latest
     build:
       context: .
       dockerfile: Dockerfile.api
@@ -15,10 +13,8 @@ services:
     ports:
       - "8000:8000"
 
-  # Frontend Streamlit service.  Builds from the dedicated Dockerfile.frontend,
-  # resulting in a smaller image that contains only the frontend code and its
-  # dependencies.
   frontend:
+    image: belrom/credit_frontend:latest
     build:
       context: .
       dockerfile: Dockerfile.frontend
@@ -32,4 +28,3 @@ services:
       - api
     ports:
       - "8501:8501"
-    # The command is defined in the Dockerfile.frontend via CMD.

@@ -1,4 +1,4 @@
-bucket = "mlops-tfstate-bucket-roman"  # пример
+bucket = "mlops-tfstate-bucket-roman-1766514292"  # пример
 key    = "staging/terraform.tfstate"
 region = "ru-central1"
 

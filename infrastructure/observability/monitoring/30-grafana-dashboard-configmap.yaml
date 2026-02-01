@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: grafana-dashboard-credit-scoring-api
+  name: grafana-dashboard-credit-api
   labels:
     grafana_dashboard: "1"
 data:
-  credit-scoring-api.json: |
+  credit-api.json: |
     {
-      "uid": "credit-scoring-api",
+      "uid": "credit-api",
       "title": "Credit Scoring / API",
       "tags": ["credit-scoring", "fastapi"],
       "timezone": "browser",
@@ -20,7 +20,7 @@ data:
           "title": "UP",
           "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
           "targets": [
-            { "expr": "up{job=~\".*credit-scoring-api.*\"}", "refId": "A" }
+            { "expr": "up{job=~\".*credit-api.*\"}", "refId": "A" }
           ]
         },
         {
@@ -28,7 +28,7 @@ data:
           "title": "Requests / sec",
           "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
           "targets": [
-            { "expr": "sum(rate(http_requests_total{job=~\".*credit-scoring-api.*\"}[1m]))", "refId": "A" }
+            { "expr": "sum(rate(http_requests_total{job=~\".*credit-api.*\"}[1m]))", "refId": "A" }
           ]
         },
         {
@@ -36,7 +36,7 @@ data:
           "title": "5xx / sec",
           "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
           "targets": [
-            { "expr": "sum(rate(http_requests_total{job=~\".*credit-scoring-api.*\",status=~\"5..\"}[1m]))", "refId": "A" }
+            { "expr": "sum(rate(http_requests_total{job=~\".*credit-api.*\",status=~\"5..\"}[1m]))", "refId": "A" }
           ]
         }
       ]

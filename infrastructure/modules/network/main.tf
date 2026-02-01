@@ -33,6 +33,21 @@ resource "yandex_vpc_security_group" "k8s_nodes" {
     from_port      = 0
     to_port        = 65535
   }
+
+  # Доступ к ingress-nginx по NodePort (для демо)
+  ingress {
+    protocol       = "TCP"
+    description    = "Ingress HTTP via NodePort"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    port           = 31351
+  }
+
+  ingress {
+    protocol       = "TCP"
+    description    = "Ingress HTTPS via NodePort"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    port           = 30843
+  }
 }
 
 resource "yandex_vpc_security_group" "k8s_api" {
@@ -44,6 +59,6 @@ resource "yandex_vpc_security_group" "k8s_api" {
     protocol       = "TCP"
     description    = "K8s API access"
     v4_cidr_blocks = var.k8s_api_cidrs
-    port           = 6443
+    port           = 443
   }
 }
