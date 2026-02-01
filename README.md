@@ -1,263 +1,37 @@
 # Credit Score Project
 
-Учебный **ML / MLOps проект** для предсказания кредитного дефолта.
-Проект демонстрирует полный жизненный цикл модели машинного обучения: валидацию данных, обучение, трекинг экспериментов, тестирование и развёртывание с использованием Docker.
 
----
+Структура проекта
+Репозиторий организован по принципам чистой архитектуры, разделяя логику приложения, модель машинного обучения и инфраструктурный код. Основные директории и файлы проекта:
+    • app/ – исходный код сервиса кредитного скоринга (веб-приложение API). Здесь находится код на Python (например, с использованием Flask или FastAPI) для обработки запросов и выдачи результатов.
+    • models/ – файлы, связанные с моделью машинного обучения: обучающие скрипты, сохраненные модели (например, в формате Pickle) и данные для обучения/валидации.
+    • config/ – конфигурационные файлы приложения (например, config.yaml или файлы окружения .env), включая параметры модели, настройки базы данных и сервисов.
+    • infra/ – инфраструктурный код и скрипты развёртывания: Dockerfile, docker-compose.yml для локального запуска, скрипты миграций базы данных и (при необходимости) манифесты для Kubernetes.
+    • tests/ – тесты (юнит-тесты и интеграционные тесты) для проверки корректности работы компонентов системы. Тесты позволяют автоматизировать проверку качества при изменениях в коде.
+    • .gitlab-ci.yml – конфигурация CI/CD pipeline для автоматизированной сборки, тестирования и деплоя (подробнее см. раздел CI/CD).
+Пример структуры файлов в репозитории:
+credit-scoring-project/
+├── app/
+│   ├── api.py              # основное приложение API (запуск сервера)
+│   ├── models.py           # описание ML-модели и функция расчета скоринга
+│   └── ...                 # другие модули приложения
+├── models/
+│   ├── train_model.py      # скрипт обучения модели
+│   ├── model.pkl           # сохраненная ML-модель
+│   └── ...                 # данные или вспомогательные скрипты
+├── config/
+│   ├── config.yaml         # основные настройки приложения
+│   └── .env.example        # пример файла окружения с переменными
+├── infra/
+│   ├── docker-compose.yml  # конфигурация для локального запуска всех сервисов
+│   ├── Dockerfile          # образ для сервисов приложения
+│   └── k8s/                # (если используется) манифесты Kubernetes
+├── tests/
+│   ├── test_api.py         # тесты для API
+│   └── test_model.py       # тесты для модели
+├── .gitlab-ci.yml          # CI/CD пайплайн
+└── README.md
 
-## Цель проекта
-
-Разработка и автоматизация **скоринговой модели предсказания дефолта (PD-модель)** с акцентом на:
-
-* воспроизводимое обучение моделей
-* трекинг экспериментов с помощью MLflow
-* контроль качества данных
-* автоматическое тестирование
-* контейнеризацию и развёртывание
-
----
-
-## Стек технологий
-
-* **Python 3.10+**
-* **scikit-learn**
-* **MLflow**
-* **Great Expectations**
-* **pytest**
-* **Docker / Docker Compose**
-* **FastAPI**
-* **Streamlit**
-* **Black / Flake8**
-
----
-
-## Структура проекта
-
-```
-credit_scoring_project/
-├── data/
-│   ├── raw/                 # Исходные данные
-│   └── processed/           # Подготовленные данные
-│
-├── gx/                      # Great Expectations (datasources, suites, checkpoints)
-│
-├── mlruns/                  # MLflow experiments и артефакты
-│
-├── models/                  # Сохранённые модели и метрики
-│
-├── references/              # Полезные материалы и ссылки
-│
-├── reports/                 # Отчёты, графики, результаты экспериментов
-│
-├── scripts/
-│   ├── build.sh             # Сборка Docker-образов
-│   └── run.sh               # Запуск сервисов
-│
-├── src/
-│   ├── api/                 # FastAPI backend
-│   ├── data/                # Подготовка и валидация данных
-│   ├── feature/             # Feature engineering
-│   ├── frontend/            # Streamlit frontend
-│   ├── models/              # Обучение и инференс моделей
-│   └── make_sample.py       # Генерация примеров данных
-│
-├── tests/                   # Unit и интеграционные тесты
-│
-├── .dvcignore
-├── .flake8
-├── .gitignore
-├── docker-compose.yml
-├── Dockerfile
-├── dvc.yaml
-├── dvc.lock
-├── Makefile
-├── pyproject.toml
-├── pytest.ini
-├── README.md
-└── requirements.txt
-```
-
----
-
-## Датасет
-
-* **Default of Credit Card Clients Dataset**
-* Источник: Kaggle (UCI Machine Learning Repository)
-* Целевая переменная: `target` (дефолт / не дефолт)
-
----
-
-## Валидация данных (Great Expectations)
-
-В проекте используется **Great Expectations** для контроля качества данных.
-
-### Инициализация
-
-```bash
-export GX_BASE_DIR="$(pwd)"
-```
-
-### Создание источника данных
-
-```bash
-great_expectations datasource new
-```
-
-### Создание набора ожиданий (suite)
-
-```bash
-great_expectations suite new
-```
-
-### Создание checkpoint
-
-```bash
-great_expectations checkpoint new credit_default_checkpoint
-```
-
-### Запуск проверки
-
-```bash
-great_expectations checkpoint run credit_default_checkpoint
-```
-
----
-
-## Обучение модели
-
-Обучение реализовано в виде CLI-модуля.
-
-### Пример: логистическая регрессия
-
-```bash
-python -m src.models.train \
-  --data data/processed/credit_default.csv \
-  --target target \
-  --model logreg \
-  --n-iter 30 \
-  --cv 5 \
-  --experiment Credit_Default_Prediction5
-```
-
-### Во время обучения выполняется:
-
-* разбиение на train / validation
-* пайплайн предобработки
-* подбор гиперпараметров
-* расчёт метрик (ROC-AUC, Precision, Recall, F1)
-* сохранение модели
-* логирование эксперимента в MLflow
-
----
-
-## Трекинг экспериментов (MLflow)
-
-Запуск интерфейса MLflow:
-
-```bash
-mlflow ui
-```
-
-Интерфейс доступен по адресу:
-
-```
-http://localhost:5000
-```
-
-Логируются:
-
-* параметры модели
-* метрики качества
-* артефакты
-* версии обученных моделей
-
----
-
-## Тестирование
-
-### Запуск всех тестов
-
-```bash
-pytest -q
-```
-
-### Линтинг и форматирование
-
-```bash
-black .
-flake8 src tests
-pytest
-```
-
----
-
-## API сервис
-
-Для инференса используется **FastAPI**.
-
-* Swagger-документация:
-
-```
-http://localhost:8000/docs
-```
-
----
-
-## Frontend
-
-Простой интерфейс на **Streamlit** для отправки признаков и получения предсказаний.
-
-```
-http://localhost:8501
-```
-
----
-
-## Docker
-
-### Сборка образов
-
-```bash
-./scripts/build.sh
-```
-
-### Запуск сервисов
-
-```bash
-./scripts/run.sh
-```
-
-В составе запускаются:
-
-* API
-* Frontend
-* MLflow
-
----
-
-## Команды, используемые в CI и локально
-
-```bash
-black .
-flake8 src tests
-pytest
-```
-
-```bash
-great_expectations checkpoint run credit_default_checkpoint
-```
-
-```bash
-python -m src.models.train ...
-```
----
-
-## CI/CD (GitHub Actions)
-Проект поддерживает CI/CD пайплайн на GitHub Actions, ориентированный на задачи MLOps и качество ML-кода.
-Триггеры пайплайна
-CI запускается при:
-push в ветки main и develop
-pull request в main
 
 
 # Этап 1. Подготовка модели к промышленной эксплуатации
@@ -356,53 +130,27 @@ INT8-модель в формате ONNX обеспечила **ускорени
  **CPU-инференс с использованием ONNX Runtime и INT8-квантизации**.
 
 
- ## Этап 2. Cloud Infrastructure as Code
+Этап 2: Инфраструктура как код (Terraform, Yandex Cloud)
 
- Команды: удалить Kubernetes-ресурсы (внутри кластера)
-Удалить демо-приложение
-kubectl delete namespace demo
+Инфраструктура развёрнута в Yandex Cloud с помощью модульной конфигурации на Terraform. Настроены компоненты: VPC, Kubernetes-кластер (CPU/GPU node группы), Object Storage (для remote state) и мониторинг. Реализованы сетевые политики и security groups для безопасного взаимодействия сервисов.
 
-Удалить Ingress NGINX (и namespace)
-helm uninstall ingress-nginx -n ingress-nginx
-kubectl delete namespace ingress-nginx
+Этап 3: Контейнеризация и оркестрация
 
-Проверка, что всё чисто
-kubectl get ns
-kubectl get all -A | head
+Приложение собрано в оптимизированные Docker-образы с разделением frontend/backend. Поддержка DVC встроена в образы. Для Kubernetes созданы манифесты с Deployment (rolling update), ConfigMap/Secret, Service и Ingress для доступа к API.
 
+Этап 4: CI/CD
 
-Сначала узнай имя/ID:
-yc managed-kubernetes node-group list
+CI/CD настроен на GitHub Actions. Pipeline включает сборку, тестирование, сканирование безопасности и автоматический деплой в staging/production. Обновления проходят без простоя. Расширенные стратегии деплоя (Blue-Green, Canary) не применялись, но возможны при необходимости.
 
-Удалить node group по имени:
-yc managed-kubernetes node-group delete --name mlops-staging-cpu-ng
+Этап 5: Мониторинг и Observability
 
-Проверка:
-yc managed-kubernetes node-group list
-kubectl get nodes   # после удаления нод будет пусто/недоступно
+Используются Prometheus и Grafana для метрик, настроены дашборды производительности модели и API. Логирование через Grafana Loki. Alertmanager присылает оповещения при сбоях. Подготовлен runbook для реагирования на инциденты.
 
+Этап 6: Мониторинг дрифта
 
-Полное удаление всего, что описано в конфиге
-cd infrastructure/environments/staging
-terraform destroy
+Evidently AI интегрирован для отслеживания data и concept drift. Анализируются отклонения признаков и метрик модели. Управление версиями моделей (Seldon, A/B тесты) не реализовано, но архитектура допускает их добавление в будущем.
 
+Заключение
 
-Если node group удаляли — создать заново через Terraform
-В каталоге окружения:
-
-cd infrastructure/environments/staging
-terraform init -backend-config=backend.hcl -reconfigure
-terraform apply
-
-Перезапустить деплоймент
-kubectl rollout restart deployment/hello -n demo
-kubectl rollout status deployment/hello -n demo
-
-
-docker build \
-  --build-arg AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
-  --build-arg AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
-  -t credit_api -f Dockerfile.api .
-
-
+Проект охватывает полный MLOps-цикл: от модели до мониторинга. Система надёжно работает в продакшене. Этап автоматического переобучения (Airflow и масштабирование) не выполнен, но предусмотрены заделы для будущего расширения.
 
